@@ -16,8 +16,8 @@ class FileScanner {
 public:
     int add_direction(std::string dir);
     int clean_direction(); 
-    fnode_t* scan_file(std::string ext);
-    fnode_t* get_root_node();
+    std::vector<fnode_t*>& scan_file(std::string ext);
+    std::vector<fnode_t*>& get_root_node();
 private:
     std::list<std::string> dir_list_;
     std::vector<fnode_t*> file_root_node_;

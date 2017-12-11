@@ -1,5 +1,5 @@
 
-option(ENABLE_LOG "Logging feature" ON)
+option(ENABLE_LOG "Logging feature" OFF)
 
 cmake_minimum_required(VERSION 2.8)
 

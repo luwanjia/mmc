@@ -10,12 +10,22 @@ int FileScanner::clean_direction() {
     dir_list_.empty();
 }
 
-fnode_t* scan_file(std::string ext) {
-
+std::vector<fnode_t*>& FileScanner::scan_file(std::string ext) {
+    fnode_t* rootnode;
+    std::list<std::string>::iterator it = dir_list_.begin();
+    
+    for (; it != dir_list_.end(); it++) {
+        rootnode = retrive_file_node(*it);
+        if (rootnode) {
+            file_root_node_.push_back(rootnode);
+        }
+    }
+    return file_root_node_;
 }
 
-fnode_t* get_root_node() {
+std::vector<fnode_t*>& FileScanner::get_root_node() {
     
+    return file_root_node_;
 }
 
 fnode_t* retrive_file_node(std::string path) {
