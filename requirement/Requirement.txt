@@ -1,0 +1,61 @@
+1. 遍历文件
+    * 遍历路径
+    * 路径列表
+
+2. 过滤器
+    * wav wma mp3 ape flac
+    * mp4 mkv flv rmvb
+
+3. 解析文件
+    * 音频
+        - 歌曲名（Title）
+        - 演唱者（Artist）
+        - 专辑（Album）
+        - 日期（Year）
+        - 时长（Duration)
+        - 描述（Comment）
+        - ？？（Container）
+        + Audio编码方式（Codec）
+        + Audio通道（Stereo）
+        + Audio采样率（Sample rate）
+        + Audio波特率（Bitrate）
+    * 视频
+        - 歌曲名（Title）
+        - 演唱者（Artist）
+        - 专辑（Album）
+        - 日期（Year）
+        - 时长（Duration)
+        - 描述（Comment）
+        - ？？（Container）
+        + Video分辨率（Dimensions）
+        + Video编码方式（Codec）
+        + Video帧率（Framerate）
+        + 波特率（Bitrate）
+        + Audio编码方式（Codec）
+        + Audio通道（Stereo）
+        + Audio采样率（Sample rate）
+        + Audio波特率（Bitrate）
+
+4. Tag管理
+    - Tag读取
+    - Tag纠错
+    - Tag写入
+
+5. 文件信息存储
+    MySQL or Sqlite ?
+    table like:
+    ???
+
+6. 播放
+    - GStreamer
+    - ffmpeg
+    + 硬解
+    + 软解
+
+7. 文件传输
+    - ftp
+    - http(s)
+
+8. UI
+    * Qt
+    * HTML5
