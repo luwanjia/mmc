@@ -11,15 +11,25 @@ struct fileinfo_t {
     std::string file_name;
     std::string file_path;
     std::string file_folder;
+    uint64_t    file_size;
+    time_t      file_atime;
+    time_t      file_mtime;
+    time_t      file_ctime;
 };
 
 class FileScanner {
 public:
+    FileScanner();
+    ~FileScanner();
+    
     uint8_t reset();
-    uint8_t add_search_dir(std::string dir);
-    uint8_t add_search_ext(std::string ext);
+    uint8_t add_search_dir(const std::string dir);
+    uint8_t add_search_ext(const std::string ext);
     std::vector<fileinfo_t*>& do_search();
-    std::vector<fileinfo_t*>& get_file_list();
+    
+    std::list<std::string>& get_dir_list();
+    std::list<std::string>& get_ext_list();
+    std::vector<fileinfo_t*>& get_info_list();
 private:
     std::list<std::string> dir_list_;
     std::list<std::string> ext_list_;

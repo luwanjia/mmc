@@ -1,16 +1,25 @@
 #include "file_scanner.h"
-#include "string.h"
-
+#include <string.h>
+#include <sys/stat.h>
 #include "logger.h"
+#include "file_system.h"
+
+FileScanner::FileScanner() {
+    
+}
+
+FileScanner::~FileScanner() {
+    reset();
+}
 
 uint8_t FileScanner::reset() {
-    dir_list_.empty();
-    ext_list_.empty();
+    dir_list_.clear();
+    ext_list_.clear();
     std::vector<fileinfo_t*>::const_iterator it = file_list_.begin();
-    for (; it != file_list_.end(); it++) {
+    for (; it != file_list_.end(); ++it) {
         delete *it;
     }
-    file_list_.empty();
+    file_list_.clear();
     
     return true;
 }
@@ -18,28 +27,35 @@ uint8_t FileScanner::reset() {
 /*
  * Add search directions to search
  */
-uint8_t FileScanner::add_search_dir(std::string dir) {
-    std::list<std::string>::const_iterator it = dir_list_.begin();
+uint8_t FileScanner::add_search_dir(const std::string dir) {
+    std::string strIn = file_system::getAbsolutePath(dir);
     
-    for (; it != dir_list_.end(); it++) {
-        if (*it == dir) break;
+    if (strIn.empty()) return false;
+    
+    std::list<std::string>::iterator it = dir_list_.begin();
+    for (; it != dir_list_.end();) {
+        if ((*it).find(strIn) == 0) { // strIn is parent path, remove all child path in the list
+            it = dir_list_.erase(it);
+            continue;
+        }
+        if (strIn.find(*it) == 0) { // strIn is child path, no neet to add any more.
+            return true;
+        }
+        ++it;
     }
     
-    if (it == dir_list_.end()) {
-        dir_list_.push_back(dir);
-        return true;
-    }
-    
-    return false;
+    dir_list_.push_back(strIn);
+
+    return true;
 }
 
 /*
  * Add search extention to filter searched file.
  */
-uint8_t FileScanner::add_search_ext(std::string ext) {
+uint8_t FileScanner::add_search_ext(const std::string ext) {
     std::list<std::string>::const_iterator it = ext_list_.begin();
     
-    for (; it != ext_list_.end(); it++) {
+    for (; it != ext_list_.end(); ++it) {
         if (*it == ext) break;
     }
     if (it == ext_list_.end()) {
@@ -62,7 +78,7 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
     fname = dirinfo->d_name;
     
     std::list<std::string>::const_iterator it = ext_list_.begin();
-    for (; it != ext_list_.end(); it++) {
+    for (; it != ext_list_.end(); ++it) {
         pos = fname.rfind(*it, std::string::npos);
         if (pos == (fname.length() - (*it).length())) {
             return true;
@@ -74,19 +90,28 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
 
 std::vector<fileinfo_t*>& FileScanner::do_search() {
     std::list<std::string>::iterator it = dir_list_.begin();
-    for (; it != dir_list_.end(); it++) {
+    for (; it != dir_list_.end(); ++it) {
         retrive_file(*it);
     }
     return file_list_;
 }
 
-std::vector<fileinfo_t*>& FileScanner::get_file_list() {
+std::vector<fileinfo_t*>& FileScanner::get_info_list() {
     return file_list_;
+}
+
+std::list<std::string>& FileScanner::get_dir_list() {
+    return dir_list_;
+}
+
+std::list<std::string>& FileScanner::get_ext_list() {
+    return ext_list_;
 }
     
 uint8_t FileScanner::retrive_file(std::string path) {
     DIR* dir;
     struct dirent *ptr;
+    struct stat status;
     
     dir = opendir(path.c_str());
     if (!dir) {
@@ -104,8 +129,14 @@ uint8_t FileScanner::retrive_file(std::string path) {
                 info->file_name = ptr->d_name;
                 info->file_path = path + "/" + info->file_name;
                 info->file_folder = path;
+                if (-1 == stat(info->file_path.c_str(), &status)) {
+                    continue;
+                }
+                info->file_size = status.st_size;
+                info->file_atime = status.st_atime;
+                info->file_mtime = status.st_mtime;
+                info->file_ctime = status.st_ctime;
                 file_list_.push_back(info);
-                LOG_INFO("File: %s", info->file_path.c_str());
             }
         }
         else if(ptr->d_type == DT_DIR) {    // dir
