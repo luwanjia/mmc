@@ -8,7 +8,9 @@ int main(int argc, char *argv[]) {
     FileScanner scanner;
     
     scanner.add_search_dir("/home/jerry/Github/luwanjia/sdl_core");
+    //scanner.add_search_dir("/media/jerry/WDISK/rockchip/linux-kernel-4.4/linux-kernel");
     scanner.add_search_ext(".cc");
+    scanner.add_search_ext(".h");
     std::vector<fileinfo_t*>& info_list = scanner.do_search();
     
     std::vector<fileinfo_t*>::const_iterator it = info_list.begin();

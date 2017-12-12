@@ -11,7 +11,6 @@ struct fileinfo_t {
     std::string file_name;
     std::string file_path;
     std::string file_folder;
-    uint32_t file_size;
 };
 
 class FileScanner {

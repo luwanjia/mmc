@@ -104,7 +104,6 @@ uint8_t FileScanner::retrive_file(std::string path) {
                 info->file_name = ptr->d_name;
                 info->file_path = path + "/" + info->file_name;
                 info->file_folder = path;
-                info->file_size = ptr->d_reclen;
                 file_list_.push_back(info);
                 LOG_INFO("File: %s", info->file_path.c_str());
             }
