@@ -1,7 +1,53 @@
 1. 遍历文件
-    * 遍历路径
-    * 路径列表
+    - 遍历文件
+    - 过滤扩展名
+    - 保存信息
+        - 文件名（file）
+        - 路径（path)
+        - 文件路径（file_path)
+        - 文件大小（file_size)
+    - 文件操作
+        * 判断类型（check_type)
+            - 目录
+            - 文件
+            - 链接
+        * 存在（exist）
+            - 目录
+            - 文件
+            - 链接
 
+        - 目录
+            - 创建（create_directory)
+            - 删除（delete_directory)
+            - 重命名（rename_directory)
+            - 大小（directory_size)
+            - 判断目录（is_directory)
+            - 是否存在（directory_exist)
+            - 当前目录（current_directory)
+            - 绝对路径（absolute_path)
+            - 复制（copy_directory)
+            - 移动（move_directory)
+            - 是否可访问
+            - 是否可读
+            - 是否可写
+        - 文件
+            - 打开（open)
+            - 读（read）
+            - 写（write）
+            - 关闭（close）
+            - 重命名（rename）
+            - 判断文件（is_file)
+            - 是否存在（exist)
+            - 是否打开（is_open)
+            - 复制（copy）
+            - 移动（move）
+            - 大小（file_size)
+            - 修改时间（file_modified_time)
+            - 访问时间（file_access_time)
+            - 创建时间（file_create_time)
+            - 是否可访问
+            - 是否可读
+            - 是否可写
 2. 过滤器
     * wav wma mp3 ape flac
     * mp4 mkv flv rmvb

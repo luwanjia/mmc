@@ -1,56 +1,121 @@
 #include "file_scanner.h"
 #include "string.h"
+
 #include "logger.h"
 
-int FileScanner::add_direction(std::string dir) {
-    dir_list_.push_back(dir);
-    return 0;
-}
-int FileScanner::clean_direction() {
+uint8_t FileScanner::reset() {
     dir_list_.empty();
+    ext_list_.empty();
+    std::vector<fileinfo_t*>::const_iterator it = file_list_.begin();
+    for (; it != file_list_.end(); it++) {
+        delete *it;
+    }
+    file_list_.empty();
+    
+    return true;
 }
 
-std::vector<fnode_t*>& FileScanner::scan_file(std::string ext) {
-    fnode_t* rootnode;
-    std::list<std::string>::iterator it = dir_list_.begin();
+/*
+ * Add search directions to search
+ */
+uint8_t FileScanner::add_search_dir(std::string dir) {
+    std::list<std::string>::const_iterator it = dir_list_.begin();
     
     for (; it != dir_list_.end(); it++) {
-        rootnode = retrive_file_node(*it);
-        if (rootnode) {
-            file_root_node_.push_back(rootnode);
-        }
+        if (*it == dir) break;
     }
-    return file_root_node_;
-}
-
-std::vector<fnode_t*>& FileScanner::get_root_node() {
     
-    return file_root_node_;
+    if (it == dir_list_.end()) {
+        dir_list_.push_back(dir);
+        return true;
+    }
+    
+    return false;
 }
 
-fnode_t* retrive_file_node(std::string path) {
-    DIR *dir;
-    struct dirent *ptr;
-    std::string base;
-
-    if ((dir = opendir(path.c_str())) == NULL) {
-        LOG_ERROR("Open dir error...");
-        return NULL;
+/*
+ * Add search extention to filter searched file.
+ */
+uint8_t FileScanner::add_search_ext(std::string ext) {
+    std::list<std::string>::const_iterator it = ext_list_.begin();
+    
+    for (; it != ext_list_.end(); it++) {
+        if (*it == ext) break;
     }
+    if (it == ext_list_.end()) {
+        ext_list_.push_back(ext);
+        return true;
+    }
+    
+    return false;
+}
 
+/*
+ * Filter by extention
+ */
+uint8_t FileScanner::check_extension(dirent* dirinfo) {
+    std::string fname;
+    int pos;
+    
+    if (!dirinfo) return false;
+    
+    fname = dirinfo->d_name;
+    
+    std::list<std::string>::const_iterator it = ext_list_.begin();
+    for (; it != ext_list_.end(); it++) {
+        pos = fname.rfind(*it, std::string::npos);
+        if (pos == (fname.length() - (*it).length())) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+std::vector<fileinfo_t*>& FileScanner::do_search() {
+    std::list<std::string>::iterator it = dir_list_.begin();
+    for (; it != dir_list_.end(); it++) {
+        
+    }
+    return file_list_;
+}
+
+std::vector<fileinfo_t*>& FileScanner::get_file_list() {
+    return file_list_;
+}
+    
+uint8_t FileScanner::retrive_file(std::string path) {
+    DIR* dir;
+    struct dirent *ptr;
+    
+    dir = opendir(path.c_str());
+    if (!dir) {
+        LOG_ERROR("Failed to open direction: %s\n", path.c_str());
+        return -1;
+    }
+    
     while ((ptr = readdir(dir)) != NULL) {
-        if(strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0)    ///current dir OR parrent dir
+        if(strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {   //current dir OR parrent dir
             continue;
-        else if(ptr->d_type == 8) {    // file
-            LOG_INFO("d_name:%s/%s\n", path_c_str(), ptr->d_name);
         }
-        else if(ptr->d_type == 10) {   // link file
-            LOG_INFO("d_name:%s/%s\n", path.c_str(), ptr->d_name);
+        else if(ptr->d_type == DT_REG) {    // file
+            if (check_extension(ptr)) {
+                fileinfo_t* info = new fileinfo_t();
+                info->file_name = ptr->d_name;
+                info->file_path = path + "/" + info->file_name;
+                info->file_folder = path;
+                info->file_size = ptr->d_reclen;
+                file_list_.push_back(info);
+                LOG_INFO("File: %s", info->file_path.c_str());
+            }
         }
-        else if(ptr->d_type == 4) {    // dir
-            base = path + std::string("/") + std::string(ptr->d_name);
-            retrive_file_node(base);
+        else if(ptr->d_type == DT_DIR) {    // dir
+            retrive_file(path + std::string("/") + std::string(ptr->d_name));
         }
     }
     closedir(dir);
+    
+    return 0;
 }
+
+

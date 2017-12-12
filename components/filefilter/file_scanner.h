@@ -5,24 +5,29 @@
 #include <vector>
 #include <string>
 #include <dirent.h>
+#include <stdint.h>
 
-struct fnode_t {
-    fnode_t* pChild;
-    fnode_t* pNext;
-    dirent info;
+struct fileinfo_t {
+    std::string file_name;
+    std::string file_path;
+    std::string file_folder;
+    uint32_t file_size;
 };
 
 class FileScanner {
 public:
-    int add_direction(std::string dir);
-    int clean_direction(); 
-    std::vector<fnode_t*>& scan_file(std::string ext);
-    std::vector<fnode_t*>& get_root_node();
+    uint8_t reset();
+    uint8_t add_search_dir(std::string dir);
+    uint8_t add_search_ext(std::string ext);
+    std::vector<fileinfo_t*>& do_search();
+    std::vector<fileinfo_t*>& get_file_list();
 private:
     std::list<std::string> dir_list_;
-    std::vector<fnode_t*> file_root_node_;
+    std::list<std::string> ext_list_;
+    std::vector<fileinfo_t*> file_list_;
     
-    fnode_t* retrive_file_node(std::string path);
+    uint8_t retrive_file(std::string path);
+    uint8_t check_extension(dirent* dirinfo);
 };
 
 #endif // COMPONENT_FILEFILTER_FILE_SCANNER_H
