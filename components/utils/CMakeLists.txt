@@ -1,9 +1,8 @@
 
-set(TARGET test)
+set(TARGET utils)
 
 set(SOURCES
   file_system.cpp
-  test.cpp
 )
 
-add_executable(${TARGET} ${SOURCES})
+add_library(${TARGET} ${SOURCES})

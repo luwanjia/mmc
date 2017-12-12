@@ -17,3 +17,4 @@ endif()
 
 add_subdirectory(filefilter)
 add_subdirectory(utils)
+add_subdirectory(test)

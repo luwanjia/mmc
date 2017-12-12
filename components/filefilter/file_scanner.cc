@@ -75,7 +75,7 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
 std::vector<fileinfo_t*>& FileScanner::do_search() {
     std::list<std::string>::iterator it = dir_list_.begin();
     for (; it != dir_list_.end(); it++) {
-        
+        retrive_file(*it);
     }
     return file_list_;
 }

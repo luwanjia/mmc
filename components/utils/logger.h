@@ -7,11 +7,13 @@
 #define LOG_INFO(format, args...)  printf("[INFO ] " format"\n", ##args);
 #define LOG_WARN(format, args...)  printf("[WARN ] " format"\n", ##args);
 #define LOG_ERROR(format, args...) printf("[ERROR] " format"\n", ##args);
+#define LOG_PRINT(format, args...) printf(format, ##args);
 #else
 #define LOG_DEBUG(format, args...)
 #define LOG_INFO(format, args...)
 #define LOG_WARN(format, args...)
 #define LOG_ERROR(format, args...)
+#define LOG_PRINT(format, args...)
 #endif
 
 #endif // COMPONENT_UTILS_LOGGER_H
