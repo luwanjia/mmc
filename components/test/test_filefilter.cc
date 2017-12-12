@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     scanner.add_search_dir("/media/jerry/WDISK/rockchip/linux-kernel-4.4/linux-kernel");
     scanner.add_search_dir("/media/jerry/WDISK/OS");
     scanner.add_search_ext(".iso");
-    //scanner.add_search_ext(".h");
+    scanner.add_search_ext(".h");
     std::vector<fileinfo_t*>& info_list = scanner.do_search();
     
     std::vector<fileinfo_t*>::const_iterator it = info_list.begin();
