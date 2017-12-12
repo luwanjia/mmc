@@ -80,7 +80,7 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
     std::list<std::string>::const_iterator it = ext_list_.begin();
     for (; it != ext_list_.end(); ++it) {
         pos = fname.rfind(*it, std::string::npos);
-        if (pos == (fname.length() - (*it).length())) {
+        if (pos != std::string::npos && pos == (fname.length() - (*it).length())) {
             return true;
         }
     }
@@ -137,6 +137,7 @@ uint8_t FileScanner::retrive_file(std::string path) {
                 info->file_mtime = status.st_mtime;
                 info->file_ctime = status.st_ctime;
                 file_list_.push_back(info);
+                LOG_PRINT("%s\r", info->file_path.c_str());
             }
         }
         else if(ptr->d_type == DT_DIR) {    // dir
