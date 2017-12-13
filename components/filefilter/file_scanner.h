@@ -23,8 +23,8 @@ public:
     ~FileScanner();
     
     uint8_t reset();
-    uint8_t add_search_dir(const std::string dir);
-    uint8_t add_search_ext(const std::string ext);
+    uint8_t add_search_dir(const std::string& dir);
+    uint8_t add_search_ext(const std::string& ext);
     std::vector<fileinfo_t*>& do_search();
     
     std::list<std::string>& get_dir_list();

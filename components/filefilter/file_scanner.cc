@@ -1,6 +1,7 @@
 #include "file_scanner.h"
 #include <string.h>
 #include <sys/stat.h>
+#include <algorithm>
 #include "logger.h"
 #include "file_system.h"
 
@@ -27,7 +28,7 @@ uint8_t FileScanner::reset() {
 /*
  * Add search directions to search
  */
-uint8_t FileScanner::add_search_dir(const std::string dir) {
+uint8_t FileScanner::add_search_dir(const std::string& dir) {
     std::string strIn = file_system::getAbsolutePath(dir);
     
     if (strIn.empty()) return false;
@@ -52,14 +53,17 @@ uint8_t FileScanner::add_search_dir(const std::string dir) {
 /*
  * Add search extention to filter searched file.
  */
-uint8_t FileScanner::add_search_ext(const std::string ext) {
+uint8_t FileScanner::add_search_ext(const std::string& ext) {
+    std::string ext_add = ext;
     std::list<std::string>::const_iterator it = ext_list_.begin();
     
+    std::transform(ext_add.begin(), ext_add.end(), ext_add.begin(), towlower);
+    
     for (; it != ext_list_.end(); ++it) {
-        if (*it == ext) break;
+        if (*it == ext_add) break;
     }
     if (it == ext_list_.end()) {
-        ext_list_.push_back(ext);
+        ext_list_.push_back(ext_add);
         return true;
     }
     
@@ -76,6 +80,7 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
     if (!dirinfo) return false;
     
     fname = dirinfo->d_name;
+    std::transform(fname.begin(), fname.end(), fname.begin(), towlower);
     
     std::list<std::string>::const_iterator it = ext_list_.begin();
     for (; it != ext_list_.end(); ++it) {
