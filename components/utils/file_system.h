@@ -1,5 +1,5 @@
-#ifndef FILE_SYSTEM_H
-#define FILE_SYSTEM_H
+#ifndef COMPONENTS_UTILS_FILE_SYSTEM_H
+#define COMPONENTS_UTILS_FILE_SYSTEM_H
 
 #include <stdint.h>
 #include <string>
@@ -32,4 +32,4 @@ public:
     static int8_t divideAbsolutePath(const std::string& path, std::vector<std::string>& result);
 };
 
-#endif // FILE_SYSTEM_H
+#endif // COMPONENTS_UTILS_FILE_SYSTEM_H
