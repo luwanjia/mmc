@@ -26,9 +26,10 @@ public:
     static int8_t check_exist(const std::string file, FileType type);
     
     static std::string getCurrentPath();
-    static std::string getAbsolutePath(const std::string path);
-    static int8_t isAbsolutePath(const std::string path);
-    static int8_t divideAbsolutePath(const std::string path, std::vector<std::string>& result);
+    static std::string getAbsolutePath(const std::string& path);
+    static std::string getRelativePath(const std::string& base_path, const std::string& path);
+    static int8_t isAbsolutePath(const std::string& path);
+    static int8_t divideAbsolutePath(const std::string& path, std::vector<std::string>& result);
 };
 
 #endif // FILE_SYSTEM_H
