@@ -10,17 +10,29 @@ FileScanner::FileScanner() {
 }
 
 FileScanner::~FileScanner() {
-    reset();
+    clear_info();
 }
 
-uint8_t FileScanner::reset() {
+uint8_t FileScanner::clear_dir() {
+    dir_list_.clear();
+    return true;
+}
+
+uint8_t FileScanner::clean_ext() {
+    ext_list_.clear();
+    return true;
+}
+
+uint8_t FileScanner::clear_info() {
     dir_list_.clear();
     ext_list_.clear();
-    std::vector<fileinfo_t*>::const_iterator it = file_list_.begin();
-    for (; it != file_list_.end(); ++it) {
-        delete *it;
+    std::map<std::string, fileinfo_t*>::const_iterator it = file_info_.begin();
+    for (; it != file_info_.end(); ++it) {
+        if (it->second) {
+            delete it->second;
+        }
     }
-    file_list_.clear();
+    file_info_.clear();
     
     return true;
 }
@@ -39,7 +51,7 @@ uint8_t FileScanner::add_search_dir(const std::string& dir) {
             it = dir_list_.erase(it);
             continue;
         }
-        if (strIn.find(*it) == 0) { // strIn is child path, no neet to add any more.
+        if (strIn.find(*it) == 0) { // strIn is child path, no need to add any more.
             return true;
         }
         ++it;
@@ -70,6 +82,24 @@ uint8_t FileScanner::add_search_ext(const std::string& ext) {
     return false;
 }
 
+uint8_t FileScanner::remove_search_dir(const std::string& dir) {
+    std::list<std::string>::iterator it = find(dir_list_.begin(), dir_list_.end(), dir);
+    if (it != dir_list_.end()) {
+        dir_list_.erase(it);
+        return true;
+    }
+    return false;
+}
+
+uint8_t FileScanner::remove_search_ext(const std::string& ext) {
+    std::list<std::string>::iterator it = find(ext_list_.begin(), ext_list_.end(), ext);
+    if (it != ext_list_.end()) {
+        ext_list_.erase(it);
+        return true;
+    }
+    return false;
+}
+
 /*
  * Filter by extention
  */
@@ -93,16 +123,16 @@ uint8_t FileScanner::check_extension(dirent* dirinfo) {
     return false;
 }
 
-std::vector<fileinfo_t*>& FileScanner::do_search() {
+void FileScanner::do_search() {
+    clear_info();
     std::list<std::string>::iterator it = dir_list_.begin();
     for (; it != dir_list_.end(); ++it) {
         retrive_file(*it);
     }
-    return file_list_;
 }
 
-std::vector<fileinfo_t*>& FileScanner::get_info_list() {
-    return file_list_;
+std::map<std::string, fileinfo_t*>& FileScanner::get_info_list() {
+    return file_info_;
 }
 
 std::list<std::string>& FileScanner::get_dir_list() {
@@ -130,18 +160,18 @@ uint8_t FileScanner::retrive_file(std::string path) {
         }
         else if(ptr->d_type == DT_REG) {    // file
             if (check_extension(ptr)) {
+                std::string filepath = path + std::string("/") + ptr->d_name;
                 fileinfo_t* info = new fileinfo_t();
-                info->file_name = ptr->d_name;
-                info->file_path = path + "/" + info->file_name;
-                info->file_folder = path;
-                if (-1 == stat(info->file_path.c_str(), &status)) {
+                info->info_filename = ptr->d_name;
+                info->info_dirpath = path;
+                if (-1 == stat(filepath.c_str(), &status)) {
                     continue;
                 }
-                info->file_size = status.st_size;
-                info->file_atime = status.st_atime;
-                info->file_mtime = status.st_mtime;
-                info->file_ctime = status.st_ctime;
-                file_list_.push_back(info);
+                info->info_filesize = status.st_size;
+                info->info_fileatime = status.st_atime;
+                info->info_filemtime = status.st_mtime;
+                info->info_filectime = status.st_ctime;
+                file_info_.insert(std::make_pair(filepath, info));
             }
         }
         else if(ptr->d_type == DT_DIR) {    // dir

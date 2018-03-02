@@ -9,11 +9,12 @@ int main(int argc, char *argv[]) {
     
     scanner.add_search_dir("/home/jerry/Music");
     scanner.add_search_ext(".MP3");
-    std::vector<fileinfo_t*>& info_list = scanner.do_search();
+    scanner.do_search();
+    std::map<std::string, fileinfo_t*>& info_list = scanner.get_info_list();
     
-    std::vector<fileinfo_t*>::const_iterator it = info_list.begin();
+    std::map<std::string, fileinfo_t*>::const_iterator it = info_list.begin();
     for (; it != info_list.end(); it++) {
-        LOG_PRINT("%s, %zu\n", (*it)->file_path.c_str(), (*it)->file_size);
+        LOG_PRINT("%s, %zu\n", it->first.c_str(), it->second->info_filesize);
     }
     LOG_INFO("FILE: count = %zu", info_list.size());
     
