@@ -50,6 +50,7 @@ private:
     std::list<std::string> ext_list_;
     std::map<std::string, fileinfo_t*> file_info_;
 
+    uint8_t read_file_info(const std::string filepath, fileinfo_t& info);
     uint8_t retrive_file(std::string path);
     uint8_t check_extension(dirent* dirinfo);
 };
